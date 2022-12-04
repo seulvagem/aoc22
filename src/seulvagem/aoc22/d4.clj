@@ -4,20 +4,39 @@
             [clojure.edn :as edn]
             [clojure.set :as set]))
 
-(defn main [simple?]
-  (let [lines (u/get-split-input 4 simple?)
-        xf (comp (map #(str/split % #","))
-                 (map #(mapv (fn [range-str] (str/split range-str #"-")) %))
-                 ;; (map #(mapv (partial mapv edn/read-string)))
-                 (map #(mapv (fn [[start end]] (range (edn/read-string start) (inc (edn/read-string end)))) %))
-                 (map #(mapv set %))
-                 ;; (filter #(or (apply set/subset? %) (apply set/superset? %)))
-                 (filter #(seq (apply set/intersection %)))
-                 )
+(defn range-inc [start end]
+  (range start (inc end)))
 
-        res1 (count (into [] xf lines))
-        res2 2]
+(def section-str-pairs->set
+  (comp set
+        #(apply range-inc %)
+        #(mapv edn/read-string %)
+        #(str/split % #"-")
+        ))
+
+(defn section-str->set [section-str]
+  (->> (str/split section-str #",")
+       (mapv section-str-pairs->set)))
+
+(defn contained? [sets]
+  (or (apply set/subset? sets)
+      (apply set/superset? sets)))
+
+(defn intersects? [sets]
+  (seq (apply set/intersection sets)))
+
+(defn main [simple?]
+  (let [lines           (u/get-split-input 4 simple?)
+        xf-section->set (map section-str->set)
+
+        xf1             (comp xf-section->set (filter contained?))
+        xf2             (comp xf-section->set (filter intersects?))
+
+        count-res #(count (sequence % lines))
+
+        res1 (count-res xf1)
+        res2 (count-res xf2)]
 
     [res1 res2]))
 
-#_(main true)
+#_(main false)

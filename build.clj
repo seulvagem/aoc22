@@ -3,7 +3,7 @@
   (:require [org.corfield.build :as bb]))
 
 (def lib 'io.github.seulvagem/aoc22)
-(def version "0.3.0")
+(def version "0.4.0")
 (def main 'seulvagem.aoc22)
 
 (defn test "Run the tests." [opts]
