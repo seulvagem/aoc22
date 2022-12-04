@@ -10,9 +10,8 @@
 (def section-str-pairs->set
   (comp set
         #(apply range-inc %)
-        #(mapv edn/read-string %)
-        #(str/split % #"-")
-        ))
+        #(map edn/read-string %)
+        #(str/split % #"-")))
 
 (defn section-str->set [section-str]
   (->> (str/split section-str #",")
@@ -29,8 +28,8 @@
   (let [lines           (u/get-split-input 4 simple?)
         xf-section->set (map section-str->set)
 
-        xf1             (comp xf-section->set (filter contained?))
-        xf2             (comp xf-section->set (filter intersects?))
+        xf1 (comp xf-section->set (filter contained?))
+        xf2 (comp xf-section->set (filter intersects?))
 
         count-res #(count (sequence % lines))
 
