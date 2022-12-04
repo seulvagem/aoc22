@@ -11,7 +11,8 @@
   [{:keys [simple]
     :or   {simple false}}]
   [(d1/main simple)
-   (d2/main simple)])
+   (d2/main simple)
+   (d3/main simple)])
 
 (defn -main
   "I don't do a whole lot ... yet."
