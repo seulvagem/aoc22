@@ -10,11 +10,10 @@
 (defn get-package [input packet-size]
   (let [packets (partition-all packet-size 1 input)
 
-        xf (comp (map set)
-                 (map-indexed (fn [ix packet]
+        xf (comp (map-indexed (fn [ix packet]
                                 [(+ ix packet-size) packet]))
-                 (filter (fn [[_ packet-set]]
-                           (= (count packet-set) packet-size))))]
+                 (filter (fn [[_ packet]]
+                           (apply distinct? packet))))]
 
     (transduce xf rf-first packets)))
 
@@ -25,4 +24,4 @@
         res2    (get-res 14)]
     [res1 res2]))
 
-#_(main false)
+(main false)
