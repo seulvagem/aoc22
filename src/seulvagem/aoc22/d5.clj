@@ -9,7 +9,7 @@
   (->> s rest (take-nth 4)))
 
 (defn get-rf-create-cargo [stack-ids]
-  (let [initial-stacks (reduce #(assoc %1 %2 '()) {} stack-ids)]
+  (let [initial-stacks (reduce #(assoc %1 %2 []) {} stack-ids)]
     (fn
       ([] initial-stacks)
       ([stacks] [stack-ids stacks])
@@ -44,16 +44,15 @@
         (update from pop)
         (update to conj crate))))
 
-(defn take-and-reorder-crates [qty stack]
-  (into '() (take qty stack)))
-
 (defn move-crates-9001 [stacks {:keys [qty from to]}]
   (let [from-stack (stacks from)
         to-stack   (stacks to)
-        crates     (take-and-reorder-crates qty from-stack)]
+        from-stack-size (count from-stack)
+        crates-pick-index (- from-stack-size qty)
+        crates     (subvec from-stack crates-pick-index)]
     (-> stacks
-        (update from (partial drop qty))
-        (update to (partial reduce conj) crates))))
+        (update from subvec 0 crates-pick-index)
+        (update to into crates))))
 
 (defn step->moves [[qty & stack-ids]]
   (repeat (edn/read-string qty) (vec stack-ids)))
@@ -64,7 +63,7 @@
 (defn get-top-crates [stack-ids stacks]
   (->>  stack-ids
         (map (fn [id]
-               (-> id stacks first)))
+               (-> id stacks peek)))
         (apply str)))
 
 (defn main [simple?]
